@@ -4,9 +4,9 @@
 
 int main()
 {
-    ChessScoreCalculation chessScoreCalculation;
-    chessScoreCalculation.Initialize();
-    chessScoreCalculation.GetChessPoints();
+	ChessScoreCalculation chessScoreCalculation;
+	chessScoreCalculation.Initialize();
+	chessScoreCalculation.GetChessPoints();
 
-    return 0;
+	return 0;
 }

@@ -14,16 +14,25 @@ using namespace std;
 
 class ChessScoreCalculation
 {
-	private:
-		string*** ChessArray;
-		int** ChessScoresArray;
-		typedef map<int, list<ChessPiece>> BasePairMap;
-		BasePairMap chessPieceMap;
-		void GetChessPieceDatas();
-		void InitializeChessScoresArray();
+private:
+	string*** ChessArray;
+	int** ChessScoresArray;
+	typedef map<int, list<ChessPiece>> ChessPiecePairMap;
+	ChessPiecePairMap ChessPieceMap;
+	typedef map<int, vector<ChessPiece, ChessPiece>> BoardPairMap;
+	BoardPairMap BoardMap;
+	void GetChessPieceDatas();
+	void InitializeChessScoresArray();
+	void FindEdibleChessPiece(int boardNumber, ChessPiece chessPiece);
+	void CheckForPawn(int boardNumber, ChessPiece chessPiece); // Piyon
+	void CheckForKnight(int boardNumber, ChessPiece chessPiece); // At
+	void CheckForBishop(int boardNumber, ChessPiece chessPiece); // Fil
+	void CheckForRook(int boardNumber, ChessPiece chessPiece); // Kale
+	void CheckForQueen(int boardNumber, ChessPiece chessPiece); // Vezir
+	void CheckForKing(int boardNumber, ChessPiece chessPiece); // Sah
 
-	public:
-		void Initialize();
-		void GetChessPoints();
+public:
+	void Initialize();
+	void GetChessPoints();
 };
 

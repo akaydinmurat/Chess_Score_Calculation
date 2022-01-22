@@ -11,7 +11,9 @@ void ChessScoreCalculation::GetChessPieceDatas() {
 		ChessArray = txtReadWrite.GetChessBoardArray();
 
 		for (int i = 0; i < Number_Of_Samples; i++) {
-			list<ChessPiece> ChessPieceList; 
+
+			list<ChessPiece> ChessPieceList;
+
 			for (int row = 0; row < Chess_Row_Axis; row++) {
 				for (int col = 0; col < Chess_Col_Axis; col++) {
 
@@ -22,7 +24,7 @@ void ChessScoreCalculation::GetChessPieceDatas() {
 					}
 				}
 			}
-			chessPieceMap.insert(pair<int, list<ChessPiece>>(i, ChessPieceList));
+			ChessPieceMap.insert(pair<int, list<ChessPiece>>(i, ChessPieceList));
 		}
 	}
 	catch (exception ex) {
@@ -39,18 +41,19 @@ void ChessScoreCalculation::GetChessPoints() {
 	try {
 
 		for (int i = 0; i < Number_Of_Samples; i++) {
-			for (auto chessPieceMapItems : chessPieceMap[i]) {
-				ChessPiece chessPiece = chessPieceMapItems;
+			for (auto chessPieceMapItems : ChessPieceMap[i]) {
 
-				if (chessPiece.Player == chessPiece.siyah) {
-					ChessScoresArray[i][Index_Of_Black] += chessPiece.Point;
+				FindEdibleChessPiece(i, chessPieceMapItems);
+
+				/*if (chessPieceMapItems.Player == chessPieceMapItems.siyah) {
+					ChessScoresArray[i][Index_Of_Black] += chessPieceMapItems.Point;
 				}
-				else if (chessPiece.Player == chessPiece.beyaz) {
-					ChessScoresArray[i][Index_Of_White] += chessPiece.Point;
+				else if (chessPieceMapItems.Player == chessPieceMapItems.beyaz) {
+					ChessScoresArray[i][Index_Of_White] += chessPieceMapItems.Point;
 				}
 				else {
 					cout << "Points cannot be set for an undefined player !" << endl;
-				}		
+				}	*/
 			}
 		}
 
@@ -81,5 +84,93 @@ void ChessScoreCalculation::InitializeChessScoresArray() {
 	catch (exception ex) {
 		cout << "GetChessPoints: " << ex.what() << endl;
 	}
+}
+
+void ChessScoreCalculation::FindEdibleChessPiece(int boardNumber, ChessPiece chessPiece) {
+
+	switch (chessPiece.Name)
+	{
+	case chessPiece.piyon:
+		CheckForPawn(boardNumber, chessPiece);
+		break;
+	case chessPiece.at:
+		CheckForKnight(boardNumber, chessPiece);
+		break;
+	case chessPiece.fil:
+		CheckForBishop(boardNumber, chessPiece);
+		break;
+	case chessPiece.kale:
+		CheckForRook(boardNumber, chessPiece);
+		break;
+	case chessPiece.vezir:
+		CheckForQueen(boardNumber, chessPiece);
+		break;
+	case chessPiece.sah:
+		CheckForKing(boardNumber, chessPiece);
+		break;
+
+	default:
+		break;
+	}
+
+}
+
+void ChessScoreCalculation::CheckForPawn(int boardNumber, ChessPiece chessPiece) { // Piyon
+	int row = chessPiece.Row;
+	int col = chessPiece.Column;
+	int moveableRowPosition_0 = 0;
+	int moveableColPosition_0 = 0;
+	int moveableRowPosition_1 = 0;
+	int moveableColPosition_1 = 0;
+
+
+	if (chessPiece.Player == chessPiece.siyah) {
+		moveableRowPosition_0 = row + 1;
+		moveableColPosition_0 = col - 1;
+		moveableRowPosition_1 = row + 1;
+		moveableColPosition_1 = col + 1;
+
+	}
+	else if (chessPiece.Player == chessPiece.beyaz) {
+		moveableRowPosition_0 = row - 1;
+		moveableColPosition_0 = col - 1;
+		moveableRowPosition_1 = row - 1;
+		moveableColPosition_1 = col + 1;
+	}
+
+	for (auto chessPieceMapItems : ChessPieceMap[boardNumber]) {
+
+		if (chessPieceMapItems.Player != chessPiece.Player) {
+			int pieceRow = chessPieceMapItems.Row;
+			int pieceCol = chessPieceMapItems.Column;
+
+			if (pieceRow == moveableRowPosition_0 && pieceCol == moveableColPosition_0) {
+				chessPieceMapItems.IsInDanger = true;
+			}
+			else if (pieceRow == moveableRowPosition_1 && pieceCol == moveableColPosition_1) {
+				chessPieceMapItems.IsInDanger = true;
+			}
+		}
+	}
+}
+
+void ChessScoreCalculation::CheckForKnight(int boardNumber, ChessPiece chessPiece) { // At
+
+}
+
+void ChessScoreCalculation::CheckForBishop(int boardNumber, ChessPiece chessPiece) { // Fil
+
+}
+
+void ChessScoreCalculation::CheckForRook(int boardNumber, ChessPiece chessPiece) { // Kale
+
+}
+
+void ChessScoreCalculation::CheckForQueen(int boardNumber, ChessPiece chessPiece) { // Vezir
+
+}
+
+void ChessScoreCalculation::CheckForKing(int boardNumber, ChessPiece chessPiece) { // Sah
+
 }
 

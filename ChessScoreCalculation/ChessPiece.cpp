@@ -4,6 +4,10 @@
 
 using namespace std;
 
+ChessPiece::ChessPiece() {
+
+}
+
 ChessPiece::ChessPiece(int row, int column) {
 	Row = row;
 	Column = column;
