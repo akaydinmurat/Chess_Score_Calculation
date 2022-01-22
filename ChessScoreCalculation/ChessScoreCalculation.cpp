@@ -1,30 +1,28 @@
 ﻿#include "ChessScoreCalculation.h"
 #include "txtreadwrite.h"
+#include "ChessPiece.h"
+#include <map>
 #include <iostream>
 
-void ChessScoreCalculation::CalculateChessPoint() {
+void ChessScoreCalculation::GetChessPieceDatas() {
 
 	try {
 		txtreadwrite txtReadWrite;
 		ChessArray = txtReadWrite.GetChessBoardArray();
 
-		InitializeChessScoresArray(); // Hesaplanan Skor'larin yazdirilacagi array
-
 		for (int i = 0; i < Number_Of_Samples; i++) {
-			for (int j = 0; j < Chess_Row_Axis; j++) {
-				for (int k = 0; k < Chess_Col_Axis; k++) {
-					string deneme = ChessArray[i][j][k];
-					auto selectedChessElement = ChessElementsMap.find(ChessArray[i][j][k]);
-					int point = GetPointOfChessElements(selectedChessElement->second);
+			list<ChessPiece> ChessPieceList; 
+			for (int row = 0; row < Chess_Row_Axis; row++) {
+				for (int col = 0; col < Chess_Col_Axis; col++) {
 
-					if (selectedChessElement->second < 6) { // Siyahlar icin puan toplami
-						ChessScoresArray[i][Index_Of_Black] += point;
-					}
-					else {
-						ChessScoresArray[i][Index_Of_White] += point; // Beyazlar icin puan toplami
+					if (ChessArray[i][row][col] != "--") {
+						ChessPiece chessPiece(row, col);
+						chessPiece.SetPieceTypeNamePoint(ChessArray[i][row][col]); // The information of the pieces is filled by calling the constructor for each occupied square. 
+						ChessPieceList.push_back(chessPiece);
 					}
 				}
 			}
+			chessPieceMap.insert(pair<int, list<ChessPiece>>(i, ChessPieceList));
 		}
 	}
 	catch (exception ex) {
@@ -32,9 +30,31 @@ void ChessScoreCalculation::CalculateChessPoint() {
 	}
 }
 
+void ChessScoreCalculation::Initialize() {
+	InitializeChessScoresArray();
+	GetChessPieceDatas();
+}
+
 void ChessScoreCalculation::GetChessPoints() {
 	try {
-		CalculateChessPoint();
+
+		for (int i = 0; i < Number_Of_Samples; i++) {
+			for (auto chessPieceMapItems : chessPieceMap[i]) {
+				ChessPiece chessPiece = chessPieceMapItems;
+
+				if (chessPiece.Player == chessPiece.siyah) {
+					ChessScoresArray[i][Index_Of_Black] += chessPiece.Point;
+				}
+				else if (chessPiece.Player == chessPiece.beyaz) {
+					ChessScoresArray[i][Index_Of_White] += chessPiece.Point;
+				}
+				else {
+					cout << "Points cannot be set for an undefined player !" << endl;
+				}		
+			}
+		}
+
+
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 2; j++) {
 				cout << ChessScoresArray[i][j] << endl;
@@ -44,12 +64,11 @@ void ChessScoreCalculation::GetChessPoints() {
 	catch (exception ex) {
 		cout << "GetChessPoints: " << ex.what() << endl;
 	}
-
 }
 
 void ChessScoreCalculation::InitializeChessScoresArray() {
 	try {
-		// Number_Of_Samples * Number_Of_Players bir pointer array oluşturuluyor.
+		// Creating a pointer array of size "Number_Of_Samples * Number_Of_Players".  
 		ChessScoresArray = new int* [Number_Of_Samples];
 
 		for (int i = 0; i < Number_Of_Samples; i++) {
@@ -61,54 +80,6 @@ void ChessScoreCalculation::InitializeChessScoresArray() {
 	}
 	catch (exception ex) {
 		cout << "GetChessPoints: " << ex.what() << endl;
-	}
-}
-
-int ChessScoreCalculation::GetPointOfChessElements(ChessElements chessElements) {
-	try {
-		int elementPoint = 0;
-
-		switch (chessElements)
-		{
-		case ChessElements::ps :
-		case ChessElements::pb :
-			elementPoint = 1;
-			break;
-
-		case ChessElements::as :
-		case ChessElements::ab :
-			elementPoint = 3;
-			break;
-
-		case ChessElements::fs :
-		case ChessElements::fb :
-			elementPoint = 3;
-			break;
-
-		case ChessElements::ks :
-		case ChessElements::kb :
-			elementPoint = 5;
-			break;
-
-		case ChessElements::vs :
-		case ChessElements::vb :
-			elementPoint = 9;
-			break;
-
-		case ChessElements::ss :
-		case ChessElements::sb :
-			elementPoint = 100;
-			break;
-
-		default:
-			elementPoint = 0;
-			break;
-		}
-
-		return elementPoint;
-	}
-	catch (exception ex) {
-		cout << "GetPointOfChessElements: " << ex.what() << endl;
 	}
 }
 

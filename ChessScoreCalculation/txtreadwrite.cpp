@@ -7,7 +7,7 @@ using namespace std;
 
 void txtreadwrite::InitializeChessBoardArray() {
 	try {
-		// Number_Of_Samples * Chess_Row_Axis * Chess_Col_Axis'lik bir pointer array oluşturuluyor.
+		// Creating a pointer array of size "Number_Of_Samples * Chess_Row_Axis * Chess_Col_Axis".
 		ChessArray = new string * *[Number_Of_Samples];
 
 		for (int i = 0; i < Number_Of_Samples; i++) {
@@ -38,14 +38,14 @@ void txtreadwrite::ReadTxt() {
 			while (getline(boardFiles, readedChessBoardElement)) {
 
 				char seperator = ' '; // space
-				Split(readedChessBoardElement, seperator);//Her line için boşluk karekterine kadar ki verileri split ederek, txt icindeki her veriyi ayrı ayrı almaktadir.
+				Split(readedChessBoardElement, seperator);//It takes each data in txt separately by splitting the data up to the space character for each line. 
 				ChessArray[i][row][col] = readedChessBoardElement;
 
 				for (int col = 0; col < Chess_Col_Axis; col++) {
 					ChessArray[i][row][col] = chessBoardLineArray[col];
 				}
 
-				row++; //Her satırın sütunlarını yazdıktan sonra bir alt satıra geçmek için arttırılıyor.
+				row++; //After writing the columns of each row, it is incremented to move to the next row. 
 			}
 		}
 	}
