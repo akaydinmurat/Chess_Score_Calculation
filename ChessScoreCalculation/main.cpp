@@ -7,7 +7,7 @@ int main()
 	for (int i = 1; i < 4; i++) {
 		ChessScoreCalculation chessScoreCalculation;
 		chessScoreCalculation.Initialize("board" + to_string(i));
-		chessScoreCalculation.GetChessPoints();
+		chessScoreCalculation.GetChessPoints("board" + to_string(i));
 	}
 
 	return 0;
