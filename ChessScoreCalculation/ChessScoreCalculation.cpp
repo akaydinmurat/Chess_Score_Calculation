@@ -36,26 +36,44 @@ void ChessScoreCalculation::GetChessPieceDatas(string boardName) {
 	}
 }
 
-void ChessScoreCalculation::GetChessPoints() {
+void ChessScoreCalculation::GetChessPoints(string boardName) {
 	try {
+		ChessPiece* chessPiece;
+		double isInDangerPointConst = 0.5;
+
 		for (const auto& chessPieceMapItems : ChessPieceList) {
-
 			FindEdibleChessPiece(chessPieceMapItems);
-
-			/*if (chessPieceMapItems.Player == chessPieceMapItems.siyah) {
-				ChessScoresArray[i][Index_Of_Black] += chessPieceMapItems.Point;
-			}
-			else if (chessPieceMapItems.Player == chessPieceMapItems.beyaz) {
-				ChessScoresArray[i][Index_Of_White] += chessPieceMapItems.Point;
-			}
-			else {
-				cout << "Points cannot be set for an undefined player !" << endl;
-			}	*/
 		}
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 2; j++) {
-				cout << ChessScoresArray[i][j] << endl;
+		for (int row = 0; row < Chess_Row_Axis; row++) {
+			for (int col = 0; col < Chess_Col_Axis; col++) {
+				chessPiece = BoardMap[make_pair(row, col)];
+				if (chessPiece->Player == chessPiece->siyah) {
+					if (chessPiece->IsInDanger) {
+						ChessScoresArray[Index_Of_Black] += chessPiece->Point * isInDangerPointConst;
+					}
+					else {
+						ChessScoresArray[Index_Of_Black] += BoardMap[make_pair(row, col)]->Point;
+					}
+
+				}
+				else if (chessPiece->Player == chessPiece->beyaz) {
+					if (chessPiece->IsInDanger) {
+						ChessScoresArray[Index_Of_White] += chessPiece->Point * isInDangerPointConst;
+					}
+					else {
+						ChessScoresArray[Index_Of_White] += chessPiece->Point;
+					}
+				}
+			}
+		}
+
+		for (int playerNumber = 0; playerNumber < Number_Of_Players; playerNumber++) {
+			if (playerNumber == chessPiece->siyah) {
+				cout << boardName << ": " << "Siyah: " << ChessScoresArray[playerNumber] << endl;
+			}
+			else if (playerNumber == chessPiece->beyaz) {
+				cout << boardName << ": " << "Beyaz: " << ChessScoresArray[playerNumber] << endl;
 			}
 		}
 	}
@@ -90,14 +108,13 @@ void ChessScoreCalculation::FindEdibleChessPiece(ChessPiece* chessPiece) {
 	default:
 		break;
 	}
-
 }
 
 void ChessScoreCalculation::CheckForPawn(ChessPiece* chessPiece) { // Piyon
 	int row = chessPiece->Row;
 	int col = chessPiece->Column;
-	int moveableRowPosition_0, moveableColPosition_0, moveableRowPosition_1, moveableColPosition_1 = 0;
-	bool isCheckPossible_0, isCheckPossible_1 = true;
+	int moveableRowPosition_0 = 0, moveableColPosition_0 = 0, moveableRowPosition_1 = 0, moveableColPosition_1 = 0;
+	bool isCheckPossible_0 = true, isCheckPossible_1 = true;
 
 
 	if (chessPiece->Player == chessPiece->siyah) {
@@ -122,13 +139,15 @@ void ChessScoreCalculation::CheckForPawn(ChessPiece* chessPiece) { // Piyon
 	}
 
 	if (isCheckPossible_0) {
-		BoardMap[make_pair(moveableRowPosition_0, moveableColPosition_0)]->Player != chessPiece->Player;
-		chessPiece->IsInDanger = true;
+		if (BoardMap[make_pair(moveableRowPosition_0, moveableColPosition_0)]->Player != chessPiece->Player) {
+			BoardMap[make_pair(moveableRowPosition_0, moveableColPosition_0)]->IsInDanger = true;
+		}
 	}
 
 	if (isCheckPossible_1) {
-		BoardMap[make_pair(moveableRowPosition_1, moveableColPosition_1)]->Player != chessPiece->Player;
-		chessPiece->IsInDanger = true;
+		if (BoardMap[make_pair(moveableRowPosition_1, moveableColPosition_1)]->Player != chessPiece->Player) {
+			BoardMap[make_pair(moveableRowPosition_1, moveableColPosition_1)]->IsInDanger = true;
+		}
 	}
 }
 
@@ -155,14 +174,10 @@ void ChessScoreCalculation::CheckForKing(ChessPiece* chessPiece) { // Sah
 
 void ChessScoreCalculation::InitializeChessScoresArray() {
 	try {
-		// Creating a pointer array of size "Number_Of_Samples * Number_Of_Players".  
-		ChessScoresArray = new int* [Number_Of_Samples];
-
-		for (int i = 0; i < Number_Of_Samples; i++) {
-			ChessScoresArray[i] = new int[Number_Of_Players];
-			for (int j = 0; j < Number_Of_Players; j++) {
-				ChessScoresArray[i][j] = 0;
-			}
+		// Creating a pointer array of size "Number_Of_Players".  
+		ChessScoresArray = new double[Number_Of_Samples];
+		for (int i = 0; i < Number_Of_Players; i++) {
+			ChessScoresArray[i] = 0;
 		}
 	}
 	catch (exception ex) {

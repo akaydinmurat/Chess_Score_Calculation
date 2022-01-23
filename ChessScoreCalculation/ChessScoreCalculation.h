@@ -16,7 +16,7 @@ class ChessScoreCalculation
 {
 private:
 	string** ChessArray;
-	int** ChessScoresArray;
+	double* ChessScoresArray;
 	list<ChessPiece*> ChessPieceList;
 	list<ChessPiece*> EmptyChessPieceList;
 	map<pair<int, int>, ChessPiece*> BoardMap;
@@ -32,6 +32,6 @@ private:
 
 public:
 	void Initialize(string boardName);
-	void GetChessPoints();
+	void GetChessPoints(string boardName);
 };
 
