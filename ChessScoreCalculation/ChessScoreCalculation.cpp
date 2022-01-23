@@ -4,27 +4,31 @@
 #include <map>
 #include <iostream>
 
-void ChessScoreCalculation::GetChessPieceDatas() {
+void ChessScoreCalculation::Initialize(string boardName) {
+	InitializeChessScoresArray();
+	GetChessPieceDatas(boardName);
+}
+
+void ChessScoreCalculation::GetChessPieceDatas(string boardName) {
 
 	try {
 		txtreadwrite txtReadWrite;
-		ChessArray = txtReadWrite.GetChessBoardArray();
+		ChessArray = txtReadWrite.GetChessBoardArray(boardName);
 
-		for (int i = 0; i < Number_Of_Samples; i++) {
+		for (int row = 0; row < Chess_Row_Axis; row++) {
+			for (int col = 0; col < Chess_Col_Axis; col++) {
 
-			list<ChessPiece> ChessPieceList;
+				ChessPiece* chessPiece = new ChessPiece(row, col);
+				chessPiece->SetPieceTypeNamePoint(ChessArray[row][col]); // The information of the pieces is filled by calling the constructor for each occupied square. 
 
-			for (int row = 0; row < Chess_Row_Axis; row++) {
-				for (int col = 0; col < Chess_Col_Axis; col++) {
-
-					if (ChessArray[i][row][col] != "--") {
-						ChessPiece chessPiece(row, col);
-						chessPiece.SetPieceTypeNamePoint(ChessArray[i][row][col]); // The information of the pieces is filled by calling the constructor for each occupied square. 
-						ChessPieceList.push_back(chessPiece);
-					}
+				if (ChessArray[row][col] != "--") {
+					ChessPieceList.push_back(chessPiece);
 				}
+				else {
+					EmptyChessPieceList.push_back(chessPiece);
+				}
+				BoardMap[make_pair(row, col)] = chessPiece;
 			}
-			ChessPieceMap.insert(pair<int, list<ChessPiece>>(i, ChessPieceList));
 		}
 	}
 	catch (exception ex) {
@@ -32,31 +36,22 @@ void ChessScoreCalculation::GetChessPieceDatas() {
 	}
 }
 
-void ChessScoreCalculation::Initialize() {
-	InitializeChessScoresArray();
-	GetChessPieceDatas();
-}
-
 void ChessScoreCalculation::GetChessPoints() {
 	try {
+		for (const auto& chessPieceMapItems : ChessPieceList) {
 
-		for (int i = 0; i < Number_Of_Samples; i++) {
-			for (auto chessPieceMapItems : ChessPieceMap[i]) {
+			FindEdibleChessPiece(chessPieceMapItems);
 
-				FindEdibleChessPiece(i, chessPieceMapItems);
-
-				/*if (chessPieceMapItems.Player == chessPieceMapItems.siyah) {
-					ChessScoresArray[i][Index_Of_Black] += chessPieceMapItems.Point;
-				}
-				else if (chessPieceMapItems.Player == chessPieceMapItems.beyaz) {
-					ChessScoresArray[i][Index_Of_White] += chessPieceMapItems.Point;
-				}
-				else {
-					cout << "Points cannot be set for an undefined player !" << endl;
-				}	*/
+			/*if (chessPieceMapItems.Player == chessPieceMapItems.siyah) {
+				ChessScoresArray[i][Index_Of_Black] += chessPieceMapItems.Point;
 			}
+			else if (chessPieceMapItems.Player == chessPieceMapItems.beyaz) {
+				ChessScoresArray[i][Index_Of_White] += chessPieceMapItems.Point;
+			}
+			else {
+				cout << "Points cannot be set for an undefined player !" << endl;
+			}	*/
 		}
-
 
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 2; j++) {
@@ -68,6 +63,95 @@ void ChessScoreCalculation::GetChessPoints() {
 		cout << "GetChessPoints: " << ex.what() << endl;
 	}
 }
+
+void ChessScoreCalculation::FindEdibleChessPiece(ChessPiece* chessPiece) {
+
+	switch (chessPiece->Name)
+	{
+	case chessPiece->piyon:
+		CheckForPawn(chessPiece);
+		break;
+	case chessPiece->at:
+		CheckForKnight(chessPiece);
+		break;
+	case chessPiece->fil:
+		CheckForBishop(chessPiece);
+		break;
+	case chessPiece->kale:
+		CheckForRook(chessPiece);
+		break;
+	case chessPiece->vezir:
+		CheckForQueen(chessPiece);
+		break;
+	case chessPiece->sah:
+		CheckForKing(chessPiece);
+		break;
+
+	default:
+		break;
+	}
+
+}
+
+void ChessScoreCalculation::CheckForPawn(ChessPiece* chessPiece) { // Piyon
+	int row = chessPiece->Row;
+	int col = chessPiece->Column;
+	int moveableRowPosition_0, moveableColPosition_0, moveableRowPosition_1, moveableColPosition_1 = 0;
+	bool isCheckPossible_0, isCheckPossible_1 = true;
+
+
+	if (chessPiece->Player == chessPiece->siyah) {
+		moveableRowPosition_0 = row + 1;
+		moveableColPosition_0 = col - 1;
+		moveableRowPosition_1 = row + 1;
+		moveableColPosition_1 = col + 1;
+
+	}
+	else if (chessPiece->Player == chessPiece->beyaz) {
+		moveableRowPosition_0 = row - 1;
+		moveableColPosition_0 = col - 1;
+		moveableRowPosition_1 = row - 1;
+		moveableColPosition_1 = col + 1;
+	}
+
+	if ((moveableRowPosition_0 < 0 || moveableColPosition_0 < 0) || (moveableRowPosition_0 > 7 || moveableColPosition_0 > 7)) {
+		isCheckPossible_0 = false;
+	}
+	else if ((moveableRowPosition_1 < 0 || moveableColPosition_1 < 0) || (moveableRowPosition_1 > 7 || moveableColPosition_1 > 7)) {
+		isCheckPossible_1 = false;
+	}
+
+	if (isCheckPossible_0) {
+		BoardMap[make_pair(moveableRowPosition_0, moveableColPosition_0)]->Player != chessPiece->Player;
+		chessPiece->IsInDanger = true;
+	}
+
+	if (isCheckPossible_1) {
+		BoardMap[make_pair(moveableRowPosition_1, moveableColPosition_1)]->Player != chessPiece->Player;
+		chessPiece->IsInDanger = true;
+	}
+}
+
+void ChessScoreCalculation::CheckForKnight(ChessPiece* chessPiece) { // At
+
+}
+
+void ChessScoreCalculation::CheckForBishop(ChessPiece* chessPiece) { // Fil
+
+}
+
+void ChessScoreCalculation::CheckForRook(ChessPiece* chessPiece) { // Kale
+
+}
+
+void ChessScoreCalculation::CheckForQueen(ChessPiece* chessPiece) { // Vezir
+
+}
+
+void ChessScoreCalculation::CheckForKing(ChessPiece* chessPiece) { // Sah
+
+}
+
 
 void ChessScoreCalculation::InitializeChessScoresArray() {
 	try {
@@ -84,93 +168,5 @@ void ChessScoreCalculation::InitializeChessScoresArray() {
 	catch (exception ex) {
 		cout << "GetChessPoints: " << ex.what() << endl;
 	}
-}
-
-void ChessScoreCalculation::FindEdibleChessPiece(int boardNumber, ChessPiece chessPiece) {
-
-	switch (chessPiece.Name)
-	{
-	case chessPiece.piyon:
-		CheckForPawn(boardNumber, chessPiece);
-		break;
-	case chessPiece.at:
-		CheckForKnight(boardNumber, chessPiece);
-		break;
-	case chessPiece.fil:
-		CheckForBishop(boardNumber, chessPiece);
-		break;
-	case chessPiece.kale:
-		CheckForRook(boardNumber, chessPiece);
-		break;
-	case chessPiece.vezir:
-		CheckForQueen(boardNumber, chessPiece);
-		break;
-	case chessPiece.sah:
-		CheckForKing(boardNumber, chessPiece);
-		break;
-
-	default:
-		break;
-	}
-
-}
-
-void ChessScoreCalculation::CheckForPawn(int boardNumber, ChessPiece chessPiece) { // Piyon
-	int row = chessPiece.Row;
-	int col = chessPiece.Column;
-	int moveableRowPosition_0 = 0;
-	int moveableColPosition_0 = 0;
-	int moveableRowPosition_1 = 0;
-	int moveableColPosition_1 = 0;
-
-
-	if (chessPiece.Player == chessPiece.siyah) {
-		moveableRowPosition_0 = row + 1;
-		moveableColPosition_0 = col - 1;
-		moveableRowPosition_1 = row + 1;
-		moveableColPosition_1 = col + 1;
-
-	}
-	else if (chessPiece.Player == chessPiece.beyaz) {
-		moveableRowPosition_0 = row - 1;
-		moveableColPosition_0 = col - 1;
-		moveableRowPosition_1 = row - 1;
-		moveableColPosition_1 = col + 1;
-	}
-
-	for (auto chessPieceMapItems : ChessPieceMap[boardNumber]) {
-
-		if (chessPieceMapItems.Player != chessPiece.Player) {
-			int pieceRow = chessPieceMapItems.Row;
-			int pieceCol = chessPieceMapItems.Column;
-
-			if (pieceRow == moveableRowPosition_0 && pieceCol == moveableColPosition_0) {
-				chessPieceMapItems.IsInDanger = true;
-			}
-			else if (pieceRow == moveableRowPosition_1 && pieceCol == moveableColPosition_1) {
-				chessPieceMapItems.IsInDanger = true;
-			}
-		}
-	}
-}
-
-void ChessScoreCalculation::CheckForKnight(int boardNumber, ChessPiece chessPiece) { // At
-
-}
-
-void ChessScoreCalculation::CheckForBishop(int boardNumber, ChessPiece chessPiece) { // Fil
-
-}
-
-void ChessScoreCalculation::CheckForRook(int boardNumber, ChessPiece chessPiece) { // Kale
-
-}
-
-void ChessScoreCalculation::CheckForQueen(int boardNumber, ChessPiece chessPiece) { // Vezir
-
-}
-
-void ChessScoreCalculation::CheckForKing(int boardNumber, ChessPiece chessPiece) { // Sah
-
 }
 

@@ -5,48 +5,50 @@
 
 using namespace std;
 
+string** txtreadwrite::GetChessBoardArray(string boardName) {
+	InitializeChessBoardArray();
+	ReadTxt(boardName);
+
+	return ChessArray;
+}
 void txtreadwrite::InitializeChessBoardArray() {
 	try {
-		// Creating a pointer array of size "Number_Of_Samples * Chess_Row_Axis * Chess_Col_Axis".
-		ChessArray = new string * *[Number_Of_Samples];
+		// Creating a pointer array of size "Chess_Row_Axis * Chess_Col_Axis".
+		ChessArray = new string * [Chess_Row_Axis];
 
-		for (int i = 0; i < Number_Of_Samples; i++) {
-			ChessArray[i] = new string * [Chess_Row_Axis];
-			for (int j = 0; j < Chess_Row_Axis; j++) {
-				ChessArray[i][j] = new string[Chess_Col_Axis];
-				for (int k = 0; k < Chess_Col_Axis; k++) {
-					ChessArray[i][j][k] = "";
-				}
+		for (int row = 0; row < Chess_Row_Axis; row++) {
+			ChessArray[row] = new string[Chess_Col_Axis];
+			for (int col = 0; col < Chess_Col_Axis; col++) {
+				ChessArray[row][col] = "";
 			}
 		}
+
 	}
 	catch (exception ex) {
 		cout << "InitializeChessBoardArray: " << ex.what() << endl;
 	}
 }
 
-void txtreadwrite::ReadTxt() {
+void txtreadwrite::ReadTxt(string boardName) {
 	try {
-		for (int i = 0; i < Number_Of_Samples; i++) {
-			ifstream boardFiles("../Assets/board" + to_string(i + 1) + ".txt");
-			string readedChessBoardElement;
-			int col, row;
+		ifstream boardFiles("../Assets/" + boardName + ".txt");
+		string readedChessBoardElement;
+		int col, row;
 
-			col = 0;
-			row = 0;
+		col = 0;
+		row = 0;
 
-			while (getline(boardFiles, readedChessBoardElement)) {
+		while (getline(boardFiles, readedChessBoardElement)) {
 
-				char seperator = ' '; // space
-				Split(readedChessBoardElement, seperator);//It takes each data in txt separately by splitting the data up to the space character for each line. 
-				ChessArray[i][row][col] = readedChessBoardElement;
+			char seperator = ' '; // space
+			Split(readedChessBoardElement, seperator);//It takes each data in txt separately by splitting the data up to the space character for each line. 
+			ChessArray[row][col] = readedChessBoardElement;
 
-				for (int col = 0; col < Chess_Col_Axis; col++) {
-					ChessArray[i][row][col] = chessBoardLineArray[col];
-				}
-
-				row++; //After writing the columns of each row, it is incremented to move to the next row. 
+			for (int col = 0; col < Chess_Col_Axis; col++) {
+				ChessArray[row][col] = chessBoardLineArray[col];
 			}
+
+			row++; //After writing the columns of each row, it is incremented to move to the next row. 
 		}
 	}
 	catch (exception ex) {
@@ -101,11 +103,4 @@ void txtreadwrite::DeleteChessBoardArray() {
 	catch (exception ex) {
 		cout << "DeleteChessBoardArray: " << ex.what() << endl;
 	}
-}
-
-string*** txtreadwrite::GetChessBoardArray() {
-	InitializeChessBoardArray();
-	ReadTxt();
-
-	return ChessArray;
 }

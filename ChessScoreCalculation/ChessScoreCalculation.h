@@ -15,24 +15,23 @@ using namespace std;
 class ChessScoreCalculation
 {
 private:
-	string*** ChessArray;
+	string** ChessArray;
 	int** ChessScoresArray;
-	typedef map<int, list<ChessPiece>> ChessPiecePairMap;
-	ChessPiecePairMap ChessPieceMap;
-	typedef map<int, vector<ChessPiece, ChessPiece>> BoardPairMap;
-	BoardPairMap BoardMap;
-	void GetChessPieceDatas();
+	list<ChessPiece*> ChessPieceList;
+	list<ChessPiece*> EmptyChessPieceList;
+	map<pair<int, int>, ChessPiece*> BoardMap;
+	void GetChessPieceDatas(string boardName);
 	void InitializeChessScoresArray();
-	void FindEdibleChessPiece(int boardNumber, ChessPiece chessPiece);
-	void CheckForPawn(int boardNumber, ChessPiece chessPiece); // Piyon
-	void CheckForKnight(int boardNumber, ChessPiece chessPiece); // At
-	void CheckForBishop(int boardNumber, ChessPiece chessPiece); // Fil
-	void CheckForRook(int boardNumber, ChessPiece chessPiece); // Kale
-	void CheckForQueen(int boardNumber, ChessPiece chessPiece); // Vezir
-	void CheckForKing(int boardNumber, ChessPiece chessPiece); // Sah
+	void FindEdibleChessPiece(ChessPiece* chessPiece);
+	void CheckForPawn(ChessPiece* chessPiece); // Piyon
+	void CheckForKnight(ChessPiece* chessPiece); // At
+	void CheckForBishop(ChessPiece* chessPiece); // Fil
+	void CheckForRook(ChessPiece* chessPiece); // Kale
+	void CheckForQueen(ChessPiece* chessPiece); // Vezir
+	void CheckForKing(ChessPiece* chessPiece); // Sah
 
 public:
-	void Initialize();
+	void Initialize(string boardName);
 	void GetChessPoints();
 };
 

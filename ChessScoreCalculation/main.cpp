@@ -4,9 +4,11 @@
 
 int main()
 {
-	ChessScoreCalculation chessScoreCalculation;
-	chessScoreCalculation.Initialize();
-	chessScoreCalculation.GetChessPoints();
+	for (int i = 1; i < 4; i++) {
+		ChessScoreCalculation chessScoreCalculation;
+		chessScoreCalculation.Initialize("board" + to_string(i));
+		chessScoreCalculation.GetChessPoints();
+	}
 
 	return 0;
 }
