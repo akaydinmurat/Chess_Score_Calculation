@@ -128,7 +128,7 @@ void ChessScoreCalculation::CheckForPawn(ChessPiece* chessPiece) { // Piyon
 
 void ChessScoreCalculation::CheckForKnight(ChessPiece* chessPiece) { // At
 	try {
-		//CrossSearch(chessPiece);
+		KnightSearch(chessPiece);
 	}
 	catch (exception ex) {
 		cout << "CheckForKnight: " << ex.what() << endl;
@@ -171,39 +171,93 @@ void ChessScoreCalculation::PawnSearch(ChessPiece* chessPiece) {
 	try {
 		int row = chessPiece->Row;
 		int col = chessPiece->Column;
-		int moveableRowPosition_0 = 0, moveableColPosition_0 = 0, moveableRowPosition_1 = 0, moveableColPosition_1 = 0;
+		int nextPositionRow_0 = 0, nextPositionCol_0 = 0, nextPositionRow_1 = 0, nextPositionCol_1 = 0;
 		bool isCheckPossible_0 = true, isCheckPossible_1 = true;
 
-
 		if (chessPiece->Player == chessPiece->siyah) {
-			moveableRowPosition_0 = row + 1; moveableColPosition_0 = col - 1; moveableRowPosition_1 = row + 1; moveableColPosition_1 = col + 1;
+			nextPositionRow_0 = row + 1; nextPositionCol_0 = col - 1; nextPositionRow_1 = row + 1; nextPositionCol_1 = col + 1;
 		}
 		else if (chessPiece->Player == chessPiece->beyaz) {
-			moveableRowPosition_0 = row - 1; moveableColPosition_0 = col - 1; moveableRowPosition_1 = row - 1; moveableColPosition_1 = col + 1;
+			nextPositionRow_0 = row - 1; nextPositionCol_0 = col - 1; nextPositionRow_1 = row - 1; nextPositionCol_1 = col + 1;
 		}
 
-		if ((moveableRowPosition_0 < 0 || moveableColPosition_0 < 0) || (moveableRowPosition_0 > 7 || moveableColPosition_0 > 7)) {
+		if ((nextPositionRow_0 < 0 || nextPositionCol_0 < 0) || (nextPositionRow_0 > 7 || nextPositionCol_0 > 7)) {
 			isCheckPossible_0 = false;
 		}
-		else if ((moveableRowPosition_1 < 0 || moveableColPosition_1 < 0) || (moveableRowPosition_1 > 7 || moveableColPosition_1 > 7)) {
+
+		if ((nextPositionRow_1 < 0 || nextPositionCol_1 < 0) || (nextPositionRow_1 > 7 || nextPositionCol_1 > 7)) {
 			isCheckPossible_1 = false;
 		}
 
-
 		if (isCheckPossible_0) {
-			if (BoardMap[make_pair(moveableRowPosition_0, moveableColPosition_0)]->Player != chessPiece->Player) {
-				BoardMap[make_pair(moveableRowPosition_0, moveableColPosition_0)]->IsInDanger = true;
+			if (BoardMap[make_pair(nextPositionRow_0, nextPositionCol_0)]->Player != chessPiece->Player && BoardMap[make_pair(nextPositionRow_0, nextPositionCol_0)]->Player != chessPiece->undefinedPlayer) {
+				BoardMap[make_pair(nextPositionRow_0, nextPositionCol_0)]->IsInDanger = true;
 			}
 		}
 
 		if (isCheckPossible_1) {
-			if (BoardMap[make_pair(moveableRowPosition_1, moveableColPosition_1)]->Player != chessPiece->Player) {
-				BoardMap[make_pair(moveableRowPosition_1, moveableColPosition_1)]->IsInDanger = true;
+			if (BoardMap[make_pair(nextPositionRow_1, nextPositionCol_1)]->Player != chessPiece->Player && BoardMap[make_pair(nextPositionRow_1, nextPositionCol_1)]->Player != chessPiece->undefinedPlayer) {
+				BoardMap[make_pair(nextPositionRow_1, nextPositionCol_1)]->IsInDanger = true;
 			}
 		}
 	}
 	catch (exception ex) {
 		cout << "CrossSearch: " << ex.what() << endl;
+	}
+}
+
+void ChessScoreCalculation::KnightSearch(ChessPiece* chessPiece) {
+	try {
+		int row = chessPiece->Row;
+		int col = chessPiece->Column;
+		int nextPositionRow = 0, nextPositionCol_0 = 0, nextPositionCol_1 = 0;
+		bool isCheckPossible_0 = true, isCheckPossible_1 = true;
+
+		for (int i = -2; i < 3; i++) {
+			isCheckPossible_0 = true;
+			isCheckPossible_1 = true;
+			if (i == -2) {
+				nextPositionCol_0 = -1;
+				nextPositionCol_1 = 1;
+			}
+			else if (i == -1 || i == 1) {
+				nextPositionCol_0 = -2;
+				nextPositionCol_1 = 2;
+			}
+			else if (i == 2) {
+				nextPositionCol_0 = -1;
+				nextPositionCol_1 = 1;
+			}
+			else {
+				continue;
+			}
+			nextPositionRow = i + row;
+			nextPositionCol_0 = nextPositionCol_0 + col;
+			nextPositionCol_1 = nextPositionCol_1 + col;
+
+			if ((nextPositionRow < 0 || nextPositionCol_0 < 0) || (nextPositionRow > 7 || nextPositionCol_0 > 7)) {
+				isCheckPossible_0 = false;
+			}
+
+			if ((nextPositionRow < 0 || nextPositionCol_1 < 0) || (nextPositionRow > 7 || nextPositionCol_1 > 7)) {
+				isCheckPossible_1 = false;
+			}
+
+			if (isCheckPossible_0) {
+				if (BoardMap[make_pair(nextPositionRow, nextPositionCol_0)]->Player != chessPiece->Player && BoardMap[make_pair(nextPositionRow, nextPositionCol_0)]->Player != chessPiece->undefinedPlayer) {
+					BoardMap[make_pair(nextPositionRow, nextPositionCol_0)]->IsInDanger = true;
+				}
+			}
+
+			if (isCheckPossible_1) {
+				if (BoardMap[make_pair(nextPositionRow, nextPositionCol_1)]->Player != chessPiece->Player && BoardMap[make_pair(nextPositionRow, nextPositionCol_1)]->Player != chessPiece->undefinedPlayer) {
+					BoardMap[make_pair(nextPositionRow, nextPositionCol_1)]->IsInDanger = true;
+				}
+			}
+		}
+	}
+	catch (exception ex) {
+		cout << "KnightSearch: " << ex.what() << endl;
 	}
 }
 

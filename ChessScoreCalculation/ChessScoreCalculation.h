@@ -30,6 +30,7 @@ private:
 	void CheckForQueen(ChessPiece* chessPiece); // Vezir
 	void CheckForKing(ChessPiece* chessPiece); // Sah
 	void PawnSearch(ChessPiece* chessPiece);
+	void KnightSearch(ChessPiece* chessPiece);
 	void CrossSearch(ChessPiece* chessPiece);
 	void StraightSearch(ChessPiece* chessPiece);
 
