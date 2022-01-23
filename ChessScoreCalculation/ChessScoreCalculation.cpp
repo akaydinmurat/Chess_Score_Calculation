@@ -10,8 +10,8 @@ void ChessScoreCalculation::Initialize(string boardName) {
 	GetChessPieceDatas(boardName);
 }
 
+/* The data of the chess pieces read from the txt are filled into the arrays to be used in the calculations.  */
 void ChessScoreCalculation::GetChessPieceDatas(string boardName) {
-
 	try {
 		txtreadwrite txtReadWrite;
 		ChessArray = txtReadWrite.GetChessBoardArray(boardName);
@@ -20,15 +20,15 @@ void ChessScoreCalculation::GetChessPieceDatas(string boardName) {
 			for (int col = 0; col < Chess_Col_Axis; col++) {
 
 				ChessPiece* chessPiece = new ChessPiece(row, col);
-				chessPiece->SetPieceTypeNamePoint(ChessArray[row][col]); // The information of the pieces is filled by calling the constructor for each occupied square. 
+				chessPiece->SetPieceTypeNamePoint(ChessArray[row][col]); // The information of the pieces is filled by calling the constructor for each square. 
 
 				if (ChessArray[row][col] != "--") {
-					ChessPieceList.push_back(chessPiece);
+					ChessPieceList.push_back(chessPiece); //list of filled squares 
 				}
 				else {
-					EmptyChessPieceList.push_back(chessPiece);
+					EmptyChessPieceList.push_back(chessPiece); //list of empty squares
 				}
-				BoardMap[make_pair(row, col)] = chessPiece;
+				BoardMap[make_pair(row, col)] = chessPiece; //contains the chess piece information in each coordinate. 
 			}
 		}
 	}
@@ -40,7 +40,7 @@ void ChessScoreCalculation::GetChessPieceDatas(string boardName) {
 void ChessScoreCalculation::GetChessPoints(string boardName) {
 	try {
 		ChessPiece* chessPiece;
-		double isInDangerPointConst = 0.5;
+		double const isInDangerPointConst = 0.5;
 
 		for (const auto& chessPieceMapItems : ChessPieceList) {
 			FindEdibleChessPiece(chessPieceMapItems);
@@ -117,7 +117,8 @@ void ChessScoreCalculation::FindEdibleChessPiece(ChessPiece* chessPiece) {
 	}
 }
 
-void ChessScoreCalculation::CheckForPawn(ChessPiece* chessPiece) { // Piyon
+/* Calling the search algorithm for the Pawn(Piyon). */
+void ChessScoreCalculation::CheckForPawn(ChessPiece* chessPiece) {
 	try {
 		PawnSearch(chessPiece);
 	}
@@ -126,7 +127,8 @@ void ChessScoreCalculation::CheckForPawn(ChessPiece* chessPiece) { // Piyon
 	}
 }
 
-void ChessScoreCalculation::CheckForKnight(ChessPiece* chessPiece) { // At
+/* Calling the search algorithm for the Knight(At).*/
+void ChessScoreCalculation::CheckForKnight(ChessPiece* chessPiece) {
 	try {
 		KnightSearch(chessPiece);
 	}
@@ -135,7 +137,8 @@ void ChessScoreCalculation::CheckForKnight(ChessPiece* chessPiece) { // At
 	}
 }
 
-void ChessScoreCalculation::CheckForBishop(ChessPiece* chessPiece) { // Fil
+/* Calling the search algorithm for the Bishop(Fil).*/
+void ChessScoreCalculation::CheckForBishop(ChessPiece* chessPiece) {
 	try {
 		CrossSearch(chessPiece);
 	}
@@ -144,7 +147,8 @@ void ChessScoreCalculation::CheckForBishop(ChessPiece* chessPiece) { // Fil
 	}
 }
 
-void ChessScoreCalculation::CheckForRook(ChessPiece* chessPiece) { // Kale
+/* Calling the search algorithm for the Rook(Kale).*/
+void ChessScoreCalculation::CheckForRook(ChessPiece* chessPiece) {
 	try {
 		StraightSearch(chessPiece);
 	}
@@ -153,7 +157,8 @@ void ChessScoreCalculation::CheckForRook(ChessPiece* chessPiece) { // Kale
 	}
 }
 
-void ChessScoreCalculation::CheckForQueen(ChessPiece* chessPiece) { // Vezir
+/* Calling the search algorithm for the Queen(Vezir).*/
+void ChessScoreCalculation::CheckForQueen(ChessPiece* chessPiece) {
 	try {
 		StraightSearch(chessPiece);
 		CrossSearch(chessPiece);
@@ -163,10 +168,17 @@ void ChessScoreCalculation::CheckForQueen(ChessPiece* chessPiece) { // Vezir
 	}
 }
 
-void ChessScoreCalculation::CheckForKing(ChessPiece* chessPiece) { // Sah
-
+/* Calling the search algorithm for the King(Sah).*/
+void ChessScoreCalculation::CheckForKing(ChessPiece* chessPiece) {
+	try {
+		KingSearch(chessPiece);
+	}
+	catch (exception ex) {
+		cout << "CheckForKing: " << ex.what() << endl;
+	}
 }
 
+/* Edible chess piece search algorithm for Pawn(Piyon).*/
 void ChessScoreCalculation::PawnSearch(ChessPiece* chessPiece) {
 	try {
 		int row = chessPiece->Row;
@@ -206,6 +218,7 @@ void ChessScoreCalculation::PawnSearch(ChessPiece* chessPiece) {
 	}
 }
 
+/* Edible chess piece search algorithm for Knight(At).*/
 void ChessScoreCalculation::KnightSearch(ChessPiece* chessPiece) {
 	try {
 		int row = chessPiece->Row;
@@ -261,6 +274,36 @@ void ChessScoreCalculation::KnightSearch(ChessPiece* chessPiece) {
 	}
 }
 
+/* Edible chess piece search algorithm for King(Sah).*/
+void ChessScoreCalculation::KingSearch(ChessPiece* chessPiece) {
+	try {
+		int row = chessPiece->Row;
+		int col = chessPiece->Column;
+		int nextPositionRow = 0, nextPositionCol = 0;
+
+		// looking for all the squares around King(Sah). 
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				nextPositionRow = i + row;
+				nextPositionCol = j + col;
+
+				if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
+					continue;
+				}
+				else {
+					if (BoardMap[make_pair(nextPositionRow, nextPositionCol)]->Player != chessPiece->Player && BoardMap[make_pair(nextPositionRow, nextPositionCol)]->Player != chessPiece->undefinedPlayer) {
+						BoardMap[make_pair(nextPositionRow, nextPositionCol)]->IsInDanger = true;
+					}
+				}
+			}
+		}
+	}
+	catch (exception ex) {
+		cout << "KingSearch: " << ex.what() << endl;
+	}
+}
+
+/* Edible chess piece search algorithm for Bishop(Fil) and Queen(Vezir).*/
 void ChessScoreCalculation::CrossSearch(ChessPiece* chessPiece) {
 	try {
 		int row = chessPiece->Row;
@@ -270,11 +313,13 @@ void ChessScoreCalculation::CrossSearch(ChessPiece* chessPiece) {
 
 		while (true) {
 			nextPositionRow++, nextPositionCol++;
-			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			
 			if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
 				break;
 			}
-			else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+
+			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
 				checkedChessPiece->IsInDanger = true;
 				break;
 			}
@@ -286,11 +331,13 @@ void ChessScoreCalculation::CrossSearch(ChessPiece* chessPiece) {
 		nextPositionRow = row, nextPositionCol = col;
 		while (true) {
 			nextPositionRow++, nextPositionCol--;
-			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+
 			if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
 				break;
 			}
-			else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+
+			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
 				checkedChessPiece->IsInDanger = true;
 				break;
 			}
@@ -301,11 +348,13 @@ void ChessScoreCalculation::CrossSearch(ChessPiece* chessPiece) {
 		nextPositionRow = row, nextPositionCol = col;
 		while (true) {
 			nextPositionRow--, nextPositionCol++;
-			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+
 			if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
 				break;
 			}
-			else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+
+			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
 				checkedChessPiece->IsInDanger = true;
 				break;
 			}
@@ -316,11 +365,13 @@ void ChessScoreCalculation::CrossSearch(ChessPiece* chessPiece) {
 		nextPositionRow = row, nextPositionCol = col;
 		while (true) {
 			nextPositionRow--, nextPositionCol--;
-			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+
 			if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
 				break;
 			}
-			else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+
+			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
 				checkedChessPiece->IsInDanger = true;
 				break;
 			}
@@ -334,6 +385,7 @@ void ChessScoreCalculation::CrossSearch(ChessPiece* chessPiece) {
 	}
 }
 
+/* Edible chess piece search algorithm for Rook(Kale) and Queen(Vezir).*/
 void ChessScoreCalculation::StraightSearch(ChessPiece* chessPiece) {
 	try {
 		int row = chessPiece->Row;
@@ -343,11 +395,13 @@ void ChessScoreCalculation::StraightSearch(ChessPiece* chessPiece) {
 
 		while (true) {
 			nextPositionCol++;
-			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+
 			if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
 				break;
 			}
-			else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+
+			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
 				checkedChessPiece->IsInDanger = true;
 				break;
 			}
@@ -359,11 +413,13 @@ void ChessScoreCalculation::StraightSearch(ChessPiece* chessPiece) {
 		nextPositionRow = row, nextPositionCol = col;
 		while (true) {
 			nextPositionCol--;
-			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			
 			if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
 				break;
 			}
-			else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+
+			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
 				checkedChessPiece->IsInDanger = true;
 				break;
 			}
@@ -375,11 +431,13 @@ void ChessScoreCalculation::StraightSearch(ChessPiece* chessPiece) {
 		nextPositionRow = row, nextPositionCol = col;
 		while (true) {
 			nextPositionRow++;
-			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+
 			if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
 				break;
 			}
-			else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+
+			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
 				checkedChessPiece->IsInDanger = true;
 				break;
 			}
@@ -391,11 +449,13 @@ void ChessScoreCalculation::StraightSearch(ChessPiece* chessPiece) {
 		nextPositionRow = row, nextPositionCol = col;
 		while (true) {
 			nextPositionRow--;
-			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			
 			if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
 				break;
 			}
-			else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+
+			ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+			if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
 				checkedChessPiece->IsInDanger = true;
 				break;
 			}
@@ -409,6 +469,7 @@ void ChessScoreCalculation::StraightSearch(ChessPiece* chessPiece) {
 	}
 }
 
+/*The pointer array to hold the points is initialized. */
 void ChessScoreCalculation::InitializeChessScoresArray() {
 	try {
 		// Creating a pointer array of size "Number_Of_Players".  

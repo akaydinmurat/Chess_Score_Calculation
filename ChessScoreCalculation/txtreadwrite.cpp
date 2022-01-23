@@ -22,7 +22,6 @@ void txtreadwrite::InitializeChessBoardArray() {
 				ChessArray[row][col] = "";
 			}
 		}
-
 	}
 	catch (exception ex) {
 		cout << "InitializeChessBoardArray: " << ex.what() << endl;

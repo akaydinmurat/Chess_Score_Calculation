@@ -4,7 +4,7 @@ using namespace std;
 
 #define Chess_Col_Axis 8
 #define Chess_Row_Axis 8
-#define Number_Of_Samples 3 // Hesaplanmak istenen ornek chess board sayisi
+#define Number_Of_Samples 3 // The number of sample chess boards to be calculated 
 
 class txtreadwrite
 {

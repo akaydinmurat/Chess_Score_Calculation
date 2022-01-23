@@ -1,5 +1,5 @@
 # Chess_Score_Calculation<br>
-<br>
+
 <!-- ABOUT THE PROJECT --><br>
 ## About The Project<br>
 <br>
@@ -24,7 +24,7 @@ board3.txt		Black:108	White:109 <br>
 
 
 ### Built With<br>
-<br>
+
 * [Visual Studio 2019](https://visualstudio.microsoft.com/) <br>
 * [Windows 10](https://www.microsoft.com/) <br>
 * [c++17](https://en.cppreference.com/w/cpp/17) <br>
