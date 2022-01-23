@@ -118,17 +118,10 @@ void ChessScoreCalculation::CheckForPawn(ChessPiece* chessPiece) { // Piyon
 
 
 	if (chessPiece->Player == chessPiece->siyah) {
-		moveableRowPosition_0 = row + 1;
-		moveableColPosition_0 = col - 1;
-		moveableRowPosition_1 = row + 1;
-		moveableColPosition_1 = col + 1;
-
+		moveableRowPosition_0 = row + 1; moveableColPosition_0 = col - 1; moveableRowPosition_1 = row + 1; moveableColPosition_1 = col + 1;
 	}
 	else if (chessPiece->Player == chessPiece->beyaz) {
-		moveableRowPosition_0 = row - 1;
-		moveableColPosition_0 = col - 1;
-		moveableRowPosition_1 = row - 1;
-		moveableColPosition_1 = col + 1;
+		moveableRowPosition_0 = row - 1; moveableColPosition_0 = col - 1; moveableRowPosition_1 = row - 1; moveableColPosition_1 = col + 1;
 	}
 
 	if ((moveableRowPosition_0 < 0 || moveableColPosition_0 < 0) || (moveableRowPosition_0 > 7 || moveableColPosition_0 > 7)) {
@@ -137,6 +130,7 @@ void ChessScoreCalculation::CheckForPawn(ChessPiece* chessPiece) { // Piyon
 	else if ((moveableRowPosition_1 < 0 || moveableColPosition_1 < 0) || (moveableRowPosition_1 > 7 || moveableColPosition_1 > 7)) {
 		isCheckPossible_1 = false;
 	}
+
 
 	if (isCheckPossible_0) {
 		if (BoardMap[make_pair(moveableRowPosition_0, moveableColPosition_0)]->Player != chessPiece->Player) {
@@ -156,6 +150,71 @@ void ChessScoreCalculation::CheckForKnight(ChessPiece* chessPiece) { // At
 }
 
 void ChessScoreCalculation::CheckForBishop(ChessPiece* chessPiece) { // Fil
+	int row = chessPiece->Row;
+	int col = chessPiece->Column;
+	int nextPositionRow = 0, nextPositionCol = 0;
+
+	nextPositionRow = row, nextPositionCol = col;
+	while (true) {
+		nextPositionRow++, nextPositionCol++;
+		ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+		if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
+			break;
+		}
+		else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+			checkedChessPiece->IsInDanger = true;
+			break;
+		}
+		else if (checkedChessPiece->Player == chessPiece->Player) {
+			break;
+		}
+
+	}
+	nextPositionRow = row, nextPositionCol = col;
+	while (true) {
+		nextPositionRow++, nextPositionCol--;
+		ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+		if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
+			break;
+		}
+		else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+			checkedChessPiece->IsInDanger = true;
+			break;
+		}
+		else if (checkedChessPiece->Player == chessPiece->Player) {
+			break;
+		}
+	}
+	nextPositionRow = row, nextPositionCol = col;
+	while (true) {
+		nextPositionRow--, nextPositionCol++;
+		ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+		if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
+			break;
+		}
+		else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+			checkedChessPiece->IsInDanger = true;
+			break;
+		}
+		else if (checkedChessPiece->Player == chessPiece->Player) {
+			break;
+		}
+	}
+	nextPositionRow = row, nextPositionCol = col;
+	while (true) {
+		nextPositionRow--, nextPositionCol--;
+		ChessPiece* checkedChessPiece = BoardMap[make_pair(nextPositionRow, nextPositionCol)];
+		if ((nextPositionRow < 0 || nextPositionCol < 0) || (nextPositionRow > 7 || nextPositionCol > 7)) {
+			break;
+		}
+		else if (checkedChessPiece->Player != chessPiece->Player && checkedChessPiece->Player != chessPiece->undefinedPlayer) {
+			checkedChessPiece->IsInDanger = true;
+			break;
+		}
+		else if (checkedChessPiece->Player == chessPiece->Player) {
+			break;
+		}
+	}
 
 }
 
