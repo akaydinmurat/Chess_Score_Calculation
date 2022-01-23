@@ -29,6 +29,9 @@ private:
 	void CheckForRook(ChessPiece* chessPiece); // Kale
 	void CheckForQueen(ChessPiece* chessPiece); // Vezir
 	void CheckForKing(ChessPiece* chessPiece); // Sah
+	void PawnSearch(ChessPiece* chessPiece);
+	void CrossSearch(ChessPiece* chessPiece);
+	void StraightSearch(ChessPiece* chessPiece);
 
 public:
 	void Initialize(string boardName);
