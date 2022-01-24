@@ -27,6 +27,6 @@ board3.txt		Black:108	White:109 <br>
 
 * [Visual Studio 2019](https://visualstudio.microsoft.com/) <br>
 * [Windows 10](https://www.microsoft.com/) <br>
-* [c++17](https://en.cppreference.com/w/cpp/17) <br>
+* [c++20](https://en.cppreference.com/w/cpp/20) <br>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
